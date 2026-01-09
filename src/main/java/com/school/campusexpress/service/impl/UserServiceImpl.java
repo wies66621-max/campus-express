@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.school.campusexpress.entity.User;
 import com.school.campusexpress.mapper.UserMapper;
 import com.school.campusexpress.service.UserService;
+import com.school.campusexpress.util.PasswordUtil;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -66,7 +67,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
         User user = new User();
         user.setUsername(username);
-        user.setPassword(password);
+        user.setPassword(PasswordUtil.encode(password));
         user.setRealName(realName);
         user.setPhone(phone);
         user.setRole("user");
@@ -100,7 +101,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             throw new RuntimeException("账号已被禁用");
         }
 
-        if (!password.equals(user.getPassword())) {
+        if (!PasswordUtil.matches(password, user.getPassword())) {
             throw new RuntimeException("密码错误");
         }
 
