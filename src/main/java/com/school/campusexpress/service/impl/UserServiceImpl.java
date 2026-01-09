@@ -32,11 +32,16 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
     @Override
     public boolean addUser(User user) {
+        user.setRole("user");
+        user.setStatus(1);
+        user.setCreateTime(LocalDateTime.now());
+        user.setUpdateTime(LocalDateTime.now());
         return save(user);
     }
 
     @Override
     public boolean updateUser(User user) {
+        user.setUpdateTime(LocalDateTime.now());
         return updateById(user);
     }
 
