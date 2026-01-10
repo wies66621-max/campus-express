@@ -3,6 +3,8 @@ package com.school.campusexpress.service;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.school.campusexpress.entity.Express;
 
+import java.util.Map;
+
 public interface ExpressService {
 
     Express addExpress(Express express);
@@ -22,4 +24,6 @@ public interface ExpressService {
     Page<Express> searchByPhone(String phone, Integer pageNum, Integer pageSize);
 
     Page<Express> getMyExpress(Long userId, Integer pageNum, Integer pageSize);
+
+    Map<String, Object> getStatistics();
 }

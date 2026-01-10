@@ -4,15 +4,29 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.school.campusexpress.entity.Express;
+import com.school.campusexpress.entity.PickupRecord;
+import com.school.campusexpress.entity.User;
 import com.school.campusexpress.mapper.ExpressMapper;
 import com.school.campusexpress.service.ExpressService;
+import com.school.campusexpress.service.PickupRecordService;
+import com.school.campusexpress.service.UserService;
 import com.school.campusexpress.util.PickupCodeUtil;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
 
 @Service
 public class ExpressServiceImpl extends ServiceImpl<ExpressMapper, Express> implements ExpressService {
+
+    @Autowired
+    private PickupRecordService pickupRecordService;
+
+    @Autowired
+    private UserService userService;
 
     @Override
     public Express addExpress(Express express) {
@@ -66,7 +80,12 @@ public class ExpressServiceImpl extends ServiceImpl<ExpressMapper, Express> impl
             wrapper.eq(Express::getStationId, stationId);
         }
         if (status != null && !status.trim().isEmpty()) {
-            wrapper.eq(Express::getStatus, status);
+            try {
+                Integer statusInt = Integer.parseInt(status);
+                wrapper.eq(Express::getStatus, statusInt);
+            } catch (NumberFormatException e) {
+                throw new RuntimeException("状态参数格式错误");
+            }
         }
 
         wrapper.orderByDesc(Express::getCreateTime);
@@ -112,6 +131,7 @@ public class ExpressServiceImpl extends ServiceImpl<ExpressMapper, Express> impl
     }
 
     @Override
+    @Transactional
     public Express pickupByCode(String pickupCode, Long userId) {
         if (pickupCode == null || pickupCode.trim().isEmpty()) {
             throw new RuntimeException("取件码不能为空");
@@ -131,8 +151,17 @@ public class ExpressServiceImpl extends ServiceImpl<ExpressMapper, Express> impl
 
         express.setStatus(1);
         express.setUpdateTime(LocalDateTime.now());
-
         updateById(express);
+
+        PickupRecord record = new PickupRecord();
+        record.setExpressId(express.getId());
+        record.setOperatorId(userId);
+        record.setPickupTime(LocalDateTime.now());
+        record.setStatus(1);
+        record.setRemark("取件成功");
+        record.setCreateTime(LocalDateTime.now());
+        pickupRecordService.saveRecord(record);
+
         return express;
     }
 
@@ -166,11 +195,43 @@ public class ExpressServiceImpl extends ServiceImpl<ExpressMapper, Express> impl
 
     @Override
     public Page<Express> getMyExpress(Long userId, Integer pageNum, Integer pageSize) {
+        if (userId == null) {
+            throw new RuntimeException("用户ID不能为空");
+        }
+
+        User user = userService.getUserById(userId);
+        if (user == null) {
+            throw new RuntimeException("用户不存在");
+        }
+
+        if (user.getPhone() == null || user.getPhone().trim().isEmpty()) {
+            throw new RuntimeException("用户手机号不存在");
+        }
+
         Page<Express> page = new Page<>(pageNum, pageSize);
         LambdaQueryWrapper<Express> wrapper = new LambdaQueryWrapper<>();
-        wrapper.eq(Express::getReceiverPhone, userId.toString());
+        wrapper.eq(Express::getReceiverPhone, user.getPhone());
         wrapper.orderByDesc(Express::getCreateTime);
 
         return page(page, wrapper);
+    }
+
+    @Override
+    public Map<String, Object> getStatistics() {
+        Map<String, Object> statistics = new HashMap<>();
+
+        LambdaQueryWrapper<Express> pendingWrapper = new LambdaQueryWrapper<>();
+        pendingWrapper.eq(Express::getStatus, 0);
+        long pendingCount = count(pendingWrapper);
+
+        LambdaQueryWrapper<Express> pickedWrapper = new LambdaQueryWrapper<>();
+        pickedWrapper.eq(Express::getStatus, 1);
+        long pickedCount = count(pickedWrapper);
+
+        statistics.put("pendingCount", pendingCount);
+        statistics.put("pickedCount", pickedCount);
+        statistics.put("totalCount", pendingCount + pickedCount);
+
+        return statistics;
     }
 }

@@ -35,18 +35,20 @@ public class Express {
 
     @NotBlank(message = "收件人电话不能为空")
     @TableField("receiver_phone")
-    @Schema(description = "收件人电话")
+    @Schema(description = "收件人手机号")
     private String receiverPhone;
 
+    @TableField("pickup_code")
     @Schema(description = "取件码")
     private String pickupCode;
+
+    @TableField("status")
+    @Schema(description = "状态(0=待取件,1=已取件)")
+    private Integer status;
 
     @TableField("station_id")
     @Schema(description = "快递站ID")
     private Long stationId;
-
-    @Schema(description = "状态(0=待取件,1=已取件)")
-    private Integer status;
 
     @TableField("remark")
     @Schema(description = "备注")

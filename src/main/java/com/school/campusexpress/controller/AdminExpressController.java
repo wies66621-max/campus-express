@@ -11,6 +11,8 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+
 @Tag(name = "管理员快递管理", description = "管理员快递录入、查询、更新、删除接口")
 @RestController
 @RequestMapping("/admin/express")
@@ -79,6 +81,17 @@ public class AdminExpressController {
                 return R.success("删除成功");
             }
             return R.error("删除失败");
+        } catch (RuntimeException e) {
+            return R.error(e.getMessage());
+        }
+    }
+
+    @Operation(summary = "快递统计")
+    @GetMapping("/statistics")
+    public R<Map<String, Object>> getStatistics() {
+        try {
+            Map<String, Object> statistics = expressService.getStatistics();
+            return R.success(statistics);
         } catch (RuntimeException e) {
             return R.error(e.getMessage());
         }
