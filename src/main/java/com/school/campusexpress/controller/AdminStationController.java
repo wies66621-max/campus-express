@@ -1,6 +1,7 @@
 package com.school.campusexpress.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.school.campusexpress.annotation.RequireAuth;
 import com.school.campusexpress.common.R;
 import com.school.campusexpress.entity.Station;
 import com.school.campusexpress.service.StationService;
@@ -20,6 +21,7 @@ public class AdminStationController {
     private StationService stationService;
 
     @Operation(summary = "添加快递站")
+    @RequireAuth
     @PostMapping("/add")
     public R<Station> addStation(@Valid @RequestBody Station station) {
         try {
@@ -31,6 +33,7 @@ public class AdminStationController {
     }
 
     @Operation(summary = "快递站列表")
+    @RequireAuth
     @GetMapping("/list")
     public R<Page<Station>> getStationList(
             @Parameter(description = "状态") @RequestParam(required = false) Integer status,
@@ -45,6 +48,7 @@ public class AdminStationController {
     }
 
     @Operation(summary = "快递站详情")
+    @RequireAuth
     @GetMapping("/{id}")
     public R<Station> getStationById(@Parameter(description = "快递站ID") @PathVariable Long id) {
         try {
@@ -59,6 +63,7 @@ public class AdminStationController {
     }
 
     @Operation(summary = "更新快递站")
+    @RequireAuth
     @PutMapping("/update")
     public R<Station> updateStation(@RequestBody Station station) {
         try {
@@ -70,6 +75,7 @@ public class AdminStationController {
     }
 
     @Operation(summary = "删除快递站")
+    @RequireAuth
     @DeleteMapping("/delete/{id}")
     public R<String> deleteStation(@Parameter(description = "快递站ID") @PathVariable Long id) {
         try {

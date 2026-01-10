@@ -28,6 +28,9 @@ public class ExpressServiceImpl extends ServiceImpl<ExpressMapper, Express> impl
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private com.school.campusexpress.service.StationService stationService;
+
     @Override
     public Express addExpress(Express express) {
         if (express.getTrackingNumber() == null || express.getTrackingNumber().trim().isEmpty()) {
@@ -228,9 +231,12 @@ public class ExpressServiceImpl extends ServiceImpl<ExpressMapper, Express> impl
         pickedWrapper.eq(Express::getStatus, 1);
         long pickedCount = count(pickedWrapper);
 
+        long stationCount = stationService.count();
+
         statistics.put("pendingCount", pendingCount);
         statistics.put("pickedCount", pickedCount);
         statistics.put("totalCount", pendingCount + pickedCount);
+        statistics.put("stationCount", stationCount);
 
         return statistics;
     }

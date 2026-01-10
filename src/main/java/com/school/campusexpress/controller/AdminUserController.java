@@ -1,6 +1,7 @@
 package com.school.campusexpress.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.school.campusexpress.annotation.RequireAuth;
 import com.school.campusexpress.common.R;
 import com.school.campusexpress.entity.User;
 import com.school.campusexpress.service.UserService;
@@ -20,6 +21,7 @@ public class AdminUserController {
     private UserService userService;
 
     @Operation(summary = "用户列表查询")
+    @RequireAuth
     @GetMapping("/list")
     public R<Page<User>> getUserList(
             @Parameter(description = "角色") @RequestParam(required = false) String role,
@@ -35,6 +37,7 @@ public class AdminUserController {
     }
 
     @Operation(summary = "用户详情查询")
+    @RequireAuth
     @GetMapping("/{id}")
     public R<User> getUserById(@Parameter(description = "用户ID") @PathVariable Long id) {
         try {
@@ -50,6 +53,7 @@ public class AdminUserController {
     }
 
     @Operation(summary = "添加用户")
+    @RequireAuth
     @PostMapping("/add")
     public R<String> addUser(@Valid @RequestBody User user) {
         try {
@@ -64,6 +68,7 @@ public class AdminUserController {
     }
 
     @Operation(summary = "更新用户信息")
+    @RequireAuth
     @PutMapping("/update")
     public R<String> updateUser(@RequestBody User user) {
         try {
@@ -78,6 +83,7 @@ public class AdminUserController {
     }
 
     @Operation(summary = "删除用户")
+    @RequireAuth
     @DeleteMapping("/delete/{id}")
     public R<String> deleteUser(
             @Parameter(description = "用户ID") @PathVariable Long id,
@@ -94,6 +100,7 @@ public class AdminUserController {
     }
 
     @Operation(summary = "启用/禁用用户")
+    @RequireAuth
     @PutMapping("/status/{id}")
     public R<String> updateStatus(
             @Parameter(description = "用户ID") @PathVariable Long id,
@@ -110,6 +117,7 @@ public class AdminUserController {
     }
 
     @Operation(summary = "重置用户密码")
+    @RequireAuth
     @PutMapping("/reset-password/{id}")
     public R<String> resetPassword(@Parameter(description = "用户ID") @PathVariable Long id) {
         try {
@@ -124,6 +132,7 @@ public class AdminUserController {
     }
 
     @Operation(summary = "搜索用户")
+    @RequireAuth
     @GetMapping("/search")
     public R<Page<User>> searchUsers(
             @Parameter(description = "搜索关键词（用户名/手机号/真实姓名）") @RequestParam String keyword,

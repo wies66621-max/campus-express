@@ -1,11 +1,14 @@
 package com.school.campusexpress.controller;
 
+import com.school.campusexpress.annotation.RequireAuth;
 import com.school.campusexpress.common.R;
 import com.school.campusexpress.entity.User;
 import com.school.campusexpress.service.UserService;
+import com.school.campusexpress.util.JwtUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -22,6 +25,9 @@ public class UserController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private JwtUtil jwtUtil;
 
     @Operation(summary = "用户注册")
     @PostMapping("/register")
@@ -41,9 +47,11 @@ public class UserController {
             String result = userService.login(user.getUsername(), user.getPassword());
             User dbUser = userService.getUserByUsername(user.getUsername());
             
+            String token = jwtUtil.generateToken(dbUser.getId(), dbUser.getUsername(), dbUser.getRole());
+            
             Map<String, Object> data = new HashMap<>();
-            data.put("message", result);
-            data.put("userInfo", getUserInfoWithoutPassword(dbUser));
+            data.put("token", token);
+            data.put("user", getUserInfoWithoutPassword(dbUser));
             
             return R.success(data);
         } catch (RuntimeException e) {
@@ -52,6 +60,7 @@ public class UserController {
     }
 
     @Operation(summary = "根据ID查询用户")
+    @RequireAuth
     @GetMapping("/{id}")
     public R<User> getUserById(@Parameter(description = "用户ID") @PathVariable Long id) {
         User user = userService.getUserById(id);
@@ -62,6 +71,7 @@ public class UserController {
     }
 
     @Operation(summary = "查询用户列表")
+    @RequireAuth
     @GetMapping("/list")
     public R<List<User>> listUsers() {
         List<User> users = userService.listUsers();
@@ -72,6 +82,7 @@ public class UserController {
     }
 
     @Operation(summary = "添加用户")
+    @RequireAuth
     @PostMapping
     public R<String> addUser(@RequestBody User user) {
         boolean success = userService.addUser(user);
@@ -82,6 +93,7 @@ public class UserController {
     }
 
     @Operation(summary = "更新用户信息")
+    @RequireAuth
     @PutMapping
     public R<String> updateUser(@RequestBody User user) {
         boolean success = userService.updateUser(user);
@@ -92,6 +104,7 @@ public class UserController {
     }
 
     @Operation(summary = "删除用户")
+    @RequireAuth
     @DeleteMapping("/{id}")
     public R<String> deleteUser(@Parameter(description = "用户ID") @PathVariable Long id) {
         boolean success = userService.deleteUser(id);
@@ -99,6 +112,26 @@ public class UserController {
             return R.success("删除成功");
         }
         return R.error("删除失败");
+    }
+
+    @Operation(summary = "用户登出")
+    @PostMapping("/logout")
+    public R<String> logout() {
+        return R.success("登出成功");
+    }
+
+    @Operation(summary = "获取用户信息")
+    @RequireAuth
+    @GetMapping("/info")
+    public R<User> getUserInfo(HttpServletRequest request) {
+        Long userId = (Long) request.getAttribute("userId");
+        if (userId != null) {
+            User user = userService.getUserById(userId);
+            if (user != null) {
+                return R.success(getUserInfoWithoutPassword(user));
+            }
+        }
+        return R.error("用户不存在");
     }
 
     private User getUserInfoWithoutPassword(User user) {

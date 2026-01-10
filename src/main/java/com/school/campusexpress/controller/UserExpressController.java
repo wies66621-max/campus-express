@@ -1,6 +1,7 @@
 package com.school.campusexpress.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.school.campusexpress.annotation.RequireAuth;
 import com.school.campusexpress.common.R;
 import com.school.campusexpress.entity.Express;
 import com.school.campusexpress.service.ExpressService;
@@ -40,6 +41,7 @@ public class UserExpressController {
     }
 
     @Operation(summary = "我的快递")
+    @RequireAuth
     @GetMapping("/my")
     public R<Page<Express>> getMyExpress(
             @Parameter(description = "用户ID") @RequestParam Long userId,
@@ -54,6 +56,7 @@ public class UserExpressController {
     }
 
     @Operation(summary = "按单号搜索快递")
+    @RequireAuth
     @GetMapping("/search/no")
     public R<Page<Express>> searchByExpressNo(
             @Parameter(description = "快递单号") @RequestParam String expressNo,
@@ -68,6 +71,7 @@ public class UserExpressController {
     }
 
     @Operation(summary = "按手机号搜索快递")
+    @RequireAuth
     @GetMapping("/search/phone")
     public R<Page<Express>> searchByPhone(
             @Parameter(description = "手机号") @RequestParam String phone,

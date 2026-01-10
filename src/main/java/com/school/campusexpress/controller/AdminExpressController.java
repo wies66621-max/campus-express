@@ -1,6 +1,7 @@
 package com.school.campusexpress.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.school.campusexpress.annotation.RequireAuth;
 import com.school.campusexpress.common.R;
 import com.school.campusexpress.entity.Express;
 import com.school.campusexpress.service.ExpressService;
@@ -22,6 +23,7 @@ public class AdminExpressController {
     private ExpressService expressService;
 
     @Operation(summary = "录入快递")
+    @RequireAuth
     @PostMapping("/add")
     public R<Express> addExpress(@Valid @RequestBody Express express) {
         try {
@@ -33,6 +35,7 @@ public class AdminExpressController {
     }
 
     @Operation(summary = "快递列表查询")
+    @RequireAuth
     @GetMapping("/list")
     public R<Page<Express>> getExpressList(
             @Parameter(description = "快递站ID") @RequestParam(required = false) Long stationId,
@@ -48,6 +51,7 @@ public class AdminExpressController {
     }
 
     @Operation(summary = "快递详情查询")
+    @RequireAuth
     @GetMapping("/{id}")
     public R<Express> getExpressById(@Parameter(description = "快递ID") @PathVariable Long id) {
         try {
@@ -62,6 +66,7 @@ public class AdminExpressController {
     }
 
     @Operation(summary = "更新快递信息")
+    @RequireAuth
     @PutMapping("/update")
     public R<Express> updateExpress(@RequestBody Express express) {
         try {
@@ -73,6 +78,7 @@ public class AdminExpressController {
     }
 
     @Operation(summary = "删除快递")
+    @RequireAuth
     @DeleteMapping("/delete/{id}")
     public R<String> deleteExpress(@Parameter(description = "快递ID") @PathVariable Long id) {
         try {
@@ -87,6 +93,7 @@ public class AdminExpressController {
     }
 
     @Operation(summary = "快递统计")
+    @RequireAuth
     @GetMapping("/statistics")
     public R<Map<String, Object>> getStatistics() {
         try {
