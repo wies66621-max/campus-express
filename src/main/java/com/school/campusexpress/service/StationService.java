@@ -10,6 +10,8 @@ public interface StationService extends IService<Station> {
 
     Page<Station> getStationList(Integer status, Integer pageNum, Integer pageSize);
 
+    Page<Station> getStationListWithSearch(String stationName, String location, Integer status, Integer pageNum, Integer pageSize);
+
     Station getStationById(Long id);
 
     Station updateStation(Station station);

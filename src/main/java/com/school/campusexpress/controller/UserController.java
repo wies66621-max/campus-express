@@ -71,7 +71,7 @@ public class UserController {
     }
 
     @Operation(summary = "查询用户列表")
-    @RequireAuth
+    @RequireAuth(roles = {"admin"})
     @GetMapping("/list")
     public R<List<User>> listUsers() {
         List<User> users = userService.listUsers();
@@ -82,7 +82,7 @@ public class UserController {
     }
 
     @Operation(summary = "添加用户")
-    @RequireAuth
+    @RequireAuth(roles = {"admin"})
     @PostMapping
     public R<String> addUser(@RequestBody User user) {
         boolean success = userService.addUser(user);
@@ -104,7 +104,7 @@ public class UserController {
     }
 
     @Operation(summary = "删除用户")
-    @RequireAuth
+    @RequireAuth(roles = {"admin"})
     @DeleteMapping("/{id}")
     public R<String> deleteUser(@Parameter(description = "用户ID") @PathVariable Long id) {
         boolean success = userService.deleteUser(id);

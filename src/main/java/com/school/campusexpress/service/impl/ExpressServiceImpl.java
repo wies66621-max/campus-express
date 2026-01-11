@@ -3,10 +3,12 @@ package com.school.campusexpress.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.school.campusexpress.dto.ExpressInboundDTO;
 import com.school.campusexpress.entity.Express;
 import com.school.campusexpress.entity.PickupRecord;
 import com.school.campusexpress.entity.User;
 import com.school.campusexpress.mapper.ExpressMapper;
+import com.school.campusexpress.mapper.UserMapper;
 import com.school.campusexpress.service.ExpressService;
 import com.school.campusexpress.service.PickupRecordService;
 import com.school.campusexpress.service.UserService;
@@ -30,6 +32,12 @@ public class ExpressServiceImpl extends ServiceImpl<ExpressMapper, Express> impl
 
     @Autowired
     private com.school.campusexpress.service.StationService stationService;
+
+    @Autowired
+    private UserMapper userMapper;
+
+    @Autowired
+    private ExpressMapper expressMapper;
 
     @Override
     public Express addExpress(Express express) {
@@ -75,6 +83,34 @@ public class ExpressServiceImpl extends ServiceImpl<ExpressMapper, Express> impl
     }
 
     @Override
+    @Transactional
+    public void inbound(ExpressInboundDTO dto) {
+        if (expressMapper.countByTrackingNumber(dto.getTrackingNumber()) > 0) {
+            throw new RuntimeException("该快递已入库");
+        }
+
+        User user = userMapper.findByPhone(dto.getReceiverPhone());
+        if (user == null) {
+            throw new RuntimeException("未找到对应用户");
+        }
+
+        String pickupCode = PickupCodeUtil.generate();
+
+        Express express = new Express();
+        express.setTrackingNumber(dto.getTrackingNumber());
+        express.setCompany(dto.getCompany());
+        express.setReceiverName(user.getRealName());
+        express.setReceiverPhone(user.getPhone());
+        express.setPickupCode(pickupCode);
+        express.setStationId(1L);
+        express.setStatus(0);
+        express.setCreateTime(LocalDateTime.now());
+        express.setUpdateTime(LocalDateTime.now());
+
+        save(express);
+    }
+
+    @Override
     public Page<Express> getExpressList(Long stationId, String status, Integer pageNum, Integer pageSize) {
         Page<Express> page = new Page<>(pageNum, pageSize);
         LambdaQueryWrapper<Express> wrapper = new LambdaQueryWrapper<>();
@@ -89,6 +125,35 @@ public class ExpressServiceImpl extends ServiceImpl<ExpressMapper, Express> impl
             } catch (NumberFormatException e) {
                 throw new RuntimeException("状态参数格式错误");
             }
+        }
+
+        wrapper.orderByDesc(Express::getCreateTime);
+        return page(page, wrapper);
+    }
+
+    public Page<Express> getExpressListWithSearch(Long stationId, String status, String trackingNumber, String receiverName, String receiverPhone, Integer pageNum, Integer pageSize) {
+        Page<Express> page = new Page<>(pageNum, pageSize);
+        LambdaQueryWrapper<Express> wrapper = new LambdaQueryWrapper<>();
+
+        if (stationId != null) {
+            wrapper.eq(Express::getStationId, stationId);
+        }
+        if (status != null && !status.trim().isEmpty()) {
+            try {
+                Integer statusInt = Integer.parseInt(status);
+                wrapper.eq(Express::getStatus, statusInt);
+            } catch (NumberFormatException e) {
+                throw new RuntimeException("状态参数格式错误");
+            }
+        }
+        if (trackingNumber != null && !trackingNumber.trim().isEmpty()) {
+            wrapper.like(Express::getTrackingNumber, trackingNumber);
+        }
+        if (receiverName != null && !receiverName.trim().isEmpty()) {
+            wrapper.like(Express::getReceiverName, receiverName);
+        }
+        if (receiverPhone != null && !receiverPhone.trim().isEmpty()) {
+            wrapper.like(Express::getReceiverPhone, receiverPhone);
         }
 
         wrapper.orderByDesc(Express::getCreateTime);
@@ -198,6 +263,8 @@ public class ExpressServiceImpl extends ServiceImpl<ExpressMapper, Express> impl
 
     @Override
     public Page<Express> getMyExpress(Long userId, Integer pageNum, Integer pageSize) {
+        System.out.println("getMyExpress 被调用，userId: " + userId + ", pageNum: " + pageNum + ", pageSize: " + pageSize);
+        
         if (userId == null) {
             throw new RuntimeException("用户ID不能为空");
         }
@@ -216,7 +283,22 @@ public class ExpressServiceImpl extends ServiceImpl<ExpressMapper, Express> impl
         wrapper.eq(Express::getReceiverPhone, user.getPhone());
         wrapper.orderByDesc(Express::getCreateTime);
 
-        return page(page, wrapper);
+        Page<Express> result = page(page, wrapper);
+        
+        result.getRecords().forEach(express -> {
+            if (express.getStationId() != null) {
+                try {
+                    com.school.campusexpress.entity.Station station = stationService.getById(express.getStationId());
+                    if (station != null) {
+                        express.setStationName(station.getStationName());
+                    }
+                } catch (Exception e) {
+                    express.setStationName("未知站点");
+                }
+            }
+        });
+
+        return result;
     }
 
     @Override
@@ -239,5 +321,27 @@ public class ExpressServiceImpl extends ServiceImpl<ExpressMapper, Express> impl
         statistics.put("stationCount", stationCount);
 
         return statistics;
+    }
+
+    @Override
+    public Page<Express> quickSearch(String trackingNumber, String pickupCode, String receiverPhone, Integer status, Integer pageNum, Integer pageSize) {
+        Page<Express> page = new Page<>(pageNum, pageSize);
+        LambdaQueryWrapper<Express> wrapper = new LambdaQueryWrapper<>();
+
+        if (trackingNumber != null && !trackingNumber.trim().isEmpty()) {
+            wrapper.eq(Express::getTrackingNumber, trackingNumber);
+        }
+        if (pickupCode != null && !pickupCode.trim().isEmpty()) {
+            wrapper.eq(Express::getPickupCode, pickupCode);
+        }
+        if (receiverPhone != null && !receiverPhone.trim().isEmpty()) {
+            wrapper.like(Express::getReceiverPhone, receiverPhone);
+        }
+        if (status != null) {
+            wrapper.eq(Express::getStatus, status);
+        }
+
+        wrapper.orderByDesc(Express::getCreateTime);
+        return page(page, wrapper);
     }
 }

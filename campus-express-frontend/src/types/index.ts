@@ -31,6 +31,7 @@ export interface Express {
   pickupCode: string
   status: number
   stationId: number
+  stationName?: string
   remark: string
   createTime: string
   updateTime: string

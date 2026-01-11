@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.school.campusexpress.mapper.ShippingAppointmentMapper">
+
+    <select id="selectAppointmentPage" resultType="com.school.campusexpress.entity.ShippingAppointment">
+        SELECT
+            sa.*,
+            u.username AS user_name,
+            u.phone AS user_phone,
+            s.station_name AS station_name,
+            a.username AS auditor_name
+        FROM shipping_appointment sa
+        LEFT JOIN user u ON sa.user_id = u.id
+        LEFT JOIN station s ON sa.station_id = s.id
+        LEFT JOIN user a ON sa.auditor_id = a.id
+        <where>
+            <if test="userId != null">
+                AND sa.user_id = #{userId}
+            </if>
+            <if test="status != null">
+                AND sa.status = #{status}
+            </if>
+            <if test="stationId != null">
+                AND sa.station_id = #{stationId}
+            </if>
+        </where>
+        ORDER BY sa.create_time DESC
+    </select>
+
+</mapper>

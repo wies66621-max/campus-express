@@ -50,6 +50,10 @@ public class Express {
     @Schema(description = "快递站ID")
     private Long stationId;
 
+    @TableField(exist = false)
+    @Schema(description = "快递站名称")
+    private String stationName;
+
     @TableField("remark")
     @Schema(description = "备注")
     private String remark;

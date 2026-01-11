@@ -6,6 +6,10 @@ export const stationApi = {
     return request.get<PageResult<Station>>('/admin/station/list', params)
   },
 
+  search: async (stationName?: string, location?: string, status?: number, pageNum?: number, pageSize?: number): Promise<ApiResponse<PageResult<Station>>> => {
+    return request.get<PageResult<Station>>('/admin/station/search', { stationName, location, status, pageNum, pageSize })
+  },
+
   getById: async (id: number): Promise<ApiResponse<Station>> => {
     return request.get<Station>(`/admin/station/${id}`)
   },

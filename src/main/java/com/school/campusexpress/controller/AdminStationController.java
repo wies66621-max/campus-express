@@ -47,8 +47,25 @@ public class AdminStationController {
         }
     }
 
-    @Operation(summary = "快递站详情")
+    @Operation(summary = "搜索快递站")
     @RequireAuth
+    @GetMapping("/search")
+    public R<Page<Station>> searchStations(
+            @Parameter(description = "快递站名称") @RequestParam(required = false) String stationName,
+            @Parameter(description = "地址") @RequestParam(required = false) String location,
+            @Parameter(description = "状态") @RequestParam(required = false) Integer status,
+            @Parameter(description = "页码") @RequestParam(defaultValue = "1") Integer pageNum,
+            @Parameter(description = "每页大小") @RequestParam(defaultValue = "10") Integer pageSize) {
+        try {
+            Page<Station> page = stationService.getStationListWithSearch(stationName, location, status, pageNum, pageSize);
+            return R.success(page);
+        } catch (RuntimeException e) {
+            return R.error(e.getMessage());
+        }
+    }
+
+    @Operation(summary = "快递站详情")
+    @RequireAuth(roles = {"admin"})
     @GetMapping("/{id}")
     public R<Station> getStationById(@Parameter(description = "快递站ID") @PathVariable Long id) {
         try {
@@ -75,7 +92,7 @@ public class AdminStationController {
     }
 
     @Operation(summary = "删除快递站")
-    @RequireAuth
+    @RequireAuth(roles = {"admin"})
     @DeleteMapping("/delete/{id}")
     public R<String> deleteStation(@Parameter(description = "快递站ID") @PathVariable Long id) {
         try {

@@ -32,6 +32,18 @@
           <el-icon><User /></el-icon>
           <span>用户管理</span>
         </el-menu-item>
+        <el-menu-item index="/shipping" v-if="isUser">
+          <el-icon><Van /></el-icon>
+          <span>寄件预约</span>
+        </el-menu-item>
+        <el-menu-item index="/shipping-admin" v-if="isAdmin || isCourier">
+          <el-icon><CircleCheck /></el-icon>
+          <span>寄件审核</span>
+        </el-menu-item>
+        <el-menu-item index="/notice" v-if="isAdmin">
+          <el-icon><Bell /></el-icon>
+          <span>公告管理</span>
+        </el-menu-item>
       </el-menu>
     </el-aside>
     <el-container>
@@ -57,7 +69,7 @@
 import { computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useUserStore } from '@/store/modules/user'
-import { HomeFilled, Box, Document, OfficeBuilding, User } from '@element-plus/icons-vue'
+import { HomeFilled, Box, Document, OfficeBuilding, User, Bell, Van, CircleCheck } from '@element-plus/icons-vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -66,6 +78,8 @@ const userStore = useUserStore()
 const activeMenu = computed(() => route.path)
 const pageTitle = computed(() => route.meta.title as string || '首页')
 const isAdmin = computed(() => userStore.user?.role === 'admin')
+const isCourier = computed(() => userStore.user?.role === 'courier')
+const isUser = computed(() => userStore.user?.role === 'user')
 
 const handleLogout = async () => {
   await userStore.logout()

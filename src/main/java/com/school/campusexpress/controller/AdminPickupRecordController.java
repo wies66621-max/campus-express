@@ -25,7 +25,7 @@ public class AdminPickupRecordController {
     private PickupRecordService pickupRecordService;
 
     @Operation(summary = "取件记录列表")
-    @RequireAuth
+    @RequireAuth(roles = {"admin", "courier"})
     @GetMapping("/list")
     public R<Page<PickupRecord>> getPickupRecordList(
             @Parameter(description = "快递ID") @RequestParam(required = false) Long expressId,
@@ -60,7 +60,7 @@ public class AdminPickupRecordController {
     }
 
     @Operation(summary = "取件记录详情")
-    @RequireAuth
+    @RequireAuth(roles = {"admin", "courier"})
     @GetMapping("/{id}")
     public R<PickupRecord> getPickupRecordById(@Parameter(description = "记录ID") @PathVariable Long id) {
         try {
@@ -74,23 +74,8 @@ public class AdminPickupRecordController {
         }
     }
 
-    @Operation(summary = "添加取件记录")
-    @RequireAuth
-    @PostMapping("/add")
-    public R<String> addPickupRecord(@Valid @RequestBody PickupRecord pickupRecord) {
-        try {
-            boolean success = pickupRecordService.save(pickupRecord);
-            if (success) {
-                return R.success("添加成功");
-            }
-            return R.error("添加失败");
-        } catch (RuntimeException e) {
-            return R.error(e.getMessage());
-        }
-    }
-
     @Operation(summary = "更新取件记录")
-    @RequireAuth
+    @RequireAuth(roles = {"admin"})
     @PutMapping("/update")
     public R<String> updatePickupRecord(@RequestBody PickupRecord pickupRecord) {
         try {
@@ -105,7 +90,7 @@ public class AdminPickupRecordController {
     }
 
     @Operation(summary = "删除取件记录")
-    @RequireAuth
+    @RequireAuth(roles = {"admin"})
     @DeleteMapping("/delete/{id}")
     public R<String> deletePickupRecord(@Parameter(description = "记录ID") @PathVariable Long id) {
         try {

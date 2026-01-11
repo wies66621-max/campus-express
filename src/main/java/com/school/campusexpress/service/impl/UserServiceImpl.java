@@ -35,6 +35,11 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
     @Override
     public boolean addUser(User user) {
+        User existUser = getUserByUsername(user.getUsername());
+        if (existUser != null) {
+            throw new RuntimeException("用户名已存在");
+        }
+        
         user.setRole("user");
         user.setStatus(1);
         user.setCreateTime(LocalDateTime.now());
@@ -44,6 +49,26 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
     @Override
     public boolean updateUser(User user) {
+        User existingUser = getById(user.getId());
+        if (existingUser == null) {
+            throw new RuntimeException("用户不存在");
+        }
+        
+        if (!existingUser.getUsername().equals(user.getUsername())) {
+            User existUser = getUserByUsername(user.getUsername());
+            if (existUser != null) {
+                throw new RuntimeException("用户名已存在");
+            }
+        }
+        
+        if (user.getPassword() == null || user.getPassword().trim().isEmpty()) {
+            user.setPassword(existingUser.getPassword());
+        }
+        
+        if (user.getRealName() == null || user.getRealName().trim().isEmpty()) {
+            user.setRealName(existingUser.getRealName());
+        }
+        
         user.setUpdateTime(LocalDateTime.now());
         return updateById(user);
     }
@@ -69,7 +94,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
         User user = new User();
         user.setUsername(username);
-        user.setPassword(PasswordUtil.encode(password));
+        user.setPassword(password);
         user.setRealName(realName);
         user.setPhone(phone);
         user.setRole("user");
@@ -103,7 +128,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             throw new RuntimeException("账号已被禁用");
         }
 
-        if (!PasswordUtil.matches(password, user.getPassword())) {
+        if (!password.equals(user.getPassword())) {
             throw new RuntimeException("密码错误");
         }
 
@@ -149,7 +174,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             throw new RuntimeException("不能重置管理员密码");
         }
         String defaultPassword = "123456";
-        user.setPassword(PasswordUtil.encode(defaultPassword));
+        user.setPassword(defaultPassword);
         user.setUpdateTime(LocalDateTime.now());
         return updateById(user);
     }

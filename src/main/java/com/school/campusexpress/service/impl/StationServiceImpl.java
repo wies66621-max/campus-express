@@ -48,6 +48,25 @@ public class StationServiceImpl extends ServiceImpl<StationMapper, Station> impl
     }
 
     @Override
+    public Page<Station> getStationListWithSearch(String stationName, String location, Integer status, Integer pageNum, Integer pageSize) {
+        Page<Station> page = new Page<>(pageNum, pageSize);
+        LambdaQueryWrapper<Station> wrapper = new LambdaQueryWrapper<>();
+
+        if (stationName != null && !stationName.trim().isEmpty()) {
+            wrapper.like(Station::getStationName, stationName);
+        }
+        if (location != null && !location.trim().isEmpty()) {
+            wrapper.like(Station::getLocation, location);
+        }
+        if (status != null) {
+            wrapper.eq(Station::getStatus, status);
+        }
+
+        wrapper.orderByDesc(Station::getCreateTime);
+        return page(page, wrapper);
+    }
+
+    @Override
     public Station getStationById(Long id) {
         if (id == null) {
             throw new RuntimeException("快递站ID不能为空");

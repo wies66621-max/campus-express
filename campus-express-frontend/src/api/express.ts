@@ -2,6 +2,10 @@ import type { ApiResponse, PageResult, Express } from '@/types'
 import { request } from '@/utils/request'
 
 export const expressApi = {
+  inbound: async (data: { trackingNumber: string; receiverPhone: string; company?: string }): Promise<ApiResponse<void>> => {
+    return request.post<void>('/admin/express/inbound', data)
+  },
+
   getList: async (params?: any): Promise<ApiResponse<PageResult<Express>>> => {
     return request.get<PageResult<Express>>('/admin/express/list', params)
   },
@@ -24,5 +28,32 @@ export const expressApi = {
 
   delete: async (id: number): Promise<ApiResponse<void>> => {
     return request.delete<void>(`/admin/express/delete/${id}`)
+  },
+
+  getMyExpress: async (pageNum: number, pageSize: number): Promise<ApiResponse<PageResult<Express>>> => {
+    return request.get<PageResult<Express>>('/user/express/my', { pageNum, pageSize })
+  },
+
+  pickupByCode: async (pickupCode: string): Promise<ApiResponse<any>> => {
+    return request.post<any>('/user/express/pickup', null, { pickupCode })
+  },
+
+  searchByExpressNo: async (expressNo: string, pageNum: number, pageSize: number): Promise<ApiResponse<PageResult<Express>>> => {
+    return request.get<PageResult<Express>>('/user/express/search/no', { expressNo, pageNum, pageSize })
+  },
+
+  searchByPhone: async (phone: string, pageNum: number, pageSize: number): Promise<ApiResponse<PageResult<Express>>> => {
+    return request.get<PageResult<Express>>('/user/express/search/phone', { phone, pageNum, pageSize })
+  },
+
+  quickSearch: async (params: {
+    trackingNumber?: string
+    pickupCode?: string
+    receiverPhone?: string
+    status?: number
+    pageNum?: number
+    pageSize?: number
+  }): Promise<ApiResponse<PageResult<Express>>> => {
+    return request.get<PageResult<Express>>('/admin/express/search', params)
   }
 }

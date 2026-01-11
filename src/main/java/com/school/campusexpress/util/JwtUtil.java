@@ -12,7 +12,7 @@ import java.util.Map;
 @Component
 public class JwtUtil {
 
-    private static final long EXPIRATION_TIME = 7 * 24 * 60 * 60 * 1000;
+    private static final long EXPIRATION_TIME = 30 * 24 * 60 * 60 * 1000;
     private static final String SECRET_KEY = "campus-express-secret-key-for-jwt-token-generation-2024";
 
     public String generateToken(Long userId, String username, String role) {
