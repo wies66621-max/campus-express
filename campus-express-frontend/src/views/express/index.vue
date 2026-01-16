@@ -340,8 +340,7 @@ const handlePickup = (row: Express) => {
     type: 'warning'
   }).then(async () => {
     try {
-      const userId = 1
-      await expressApi.pickupByCode(row.pickupCode, userId)
+      await expressApi.pickupByCode(row.pickupCode)
       ElMessage.success('取件成功')
       handleQuickSearch()
     } catch (error) {

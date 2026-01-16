@@ -35,7 +35,7 @@ export const expressApi = {
   },
 
   pickupByCode: async (pickupCode: string): Promise<ApiResponse<any>> => {
-    return request.post<any>('/user/express/pickup', null, { pickupCode })
+    return request.post<any>('/user/express/pickup', { pickupCode })
   },
 
   searchByExpressNo: async (expressNo: string, pageNum: number, pageSize: number): Promise<ApiResponse<PageResult<Express>>> => {

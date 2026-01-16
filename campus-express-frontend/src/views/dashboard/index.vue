@@ -161,7 +161,7 @@
           <el-table-column prop="company" label="快递公司" />
           <el-table-column prop="pickupTime" label="取件时间" />
           <el-table-column prop="status" label="状态">
-            <template #default="{ row }">
+            <template #default>
               <el-tag type="success">已取件</el-tag>
             </template>
           </el-table-column>
@@ -193,7 +193,7 @@
               </div>
               <div class="notice-content">
                 <div class="notice-title">{{ notice.title }}</div>
-                <div class="notice-preview">{{ notice.content?.substring(0, 50) }}{{ notice.content?.length > 50 ? '...' : '' }}</div>
+                <div class="notice-preview">{{ notice.content?.substring(0, 50) }}{{ (notice.content?.length || 0) > 50 ? '...' : '' }}</div>
               </div>
             </div>
             <div class="notice-right">
@@ -302,7 +302,6 @@ const updatePieChart = () => {
 
 const fetchUserExpressData = async () => {
   try {
-    console.log('开始获取用户快递数据')
     const response = await expressApi.getMyExpress(1, 100)
     
     if (response.code === 200 && response.data) {
@@ -316,11 +315,6 @@ const fetchUserExpressData = async () => {
       if (pickedExpressList.value.length > 0) {
         userStats.value.lastPickupTime = pickedExpressList.value[0].updateTime?.split(' ')[0] || ''
       }
-      
-      console.log('用户快递数据获取成功:', {
-        pending: userStats.value.pendingCount,
-        picked: userStats.value.pickedCount
-      })
     }
   } catch (error: any) {
     console.error('获取用户快递数据失败:', error?.message || error)
@@ -329,7 +323,6 @@ const fetchUserExpressData = async () => {
       console.warn('用户信息可能已过期，尝试重新获取用户信息')
       try {
         await userStore.getUserInfo()
-        console.log('重新获取用户信息成功，再次尝试获取快递数据')
         await fetchUserExpressData()
       } catch (retryError) {
         console.error('重新获取用户信息失败:', retryError)

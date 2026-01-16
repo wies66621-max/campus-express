@@ -53,8 +53,6 @@ public class JwtInterceptor implements HandlerInterceptor {
         String username = jwtUtil.getUsernameFromToken(token);
         String role = jwtUtil.getRoleFromToken(token);
 
-        System.out.println("JWT Token 解析结果 - userId: " + userId + ", username: " + username + ", role: " + role);
-
         String[] allowedRoles = requireAuth.roles();
         if (allowedRoles.length > 0) {
             boolean hasPermission = false;
@@ -73,8 +71,6 @@ public class JwtInterceptor implements HandlerInterceptor {
         request.setAttribute("userId", userId);
         request.setAttribute("username", username);
         request.setAttribute("role", role);
-
-        System.out.println("Request 属性设置完成 - userId: " + request.getAttribute("userId") + ", username: " + request.getAttribute("username") + ", role: " + request.getAttribute("role"));
 
         return true;
     }

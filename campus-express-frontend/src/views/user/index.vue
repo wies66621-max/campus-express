@@ -324,7 +324,7 @@ const handleDelete = (row: User) => {
     type: 'warning'
   }).then(async () => {
     try {
-      const currentUserId = userStore.userInfo?.id || 0
+      const currentUserId = userStore.user?.id || 0
       const response = await userApi.delete(row.id, currentUserId)
       
       if (response.code === 200) {

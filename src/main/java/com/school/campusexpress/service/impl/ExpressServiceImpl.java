@@ -263,8 +263,6 @@ public class ExpressServiceImpl extends ServiceImpl<ExpressMapper, Express> impl
 
     @Override
     public Page<Express> getMyExpress(Long userId, Integer pageNum, Integer pageSize) {
-        System.out.println("getMyExpress 被调用，userId: " + userId + ", pageNum: " + pageNum + ", pageSize: " + pageSize);
-        
         if (userId == null) {
             throw new RuntimeException("用户ID不能为空");
         }

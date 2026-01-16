@@ -2,9 +2,11 @@ package com.school.campusexpress.util;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.stereotype.Component;
 
+import javax.crypto.SecretKey;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -12,8 +14,9 @@ import java.util.Map;
 @Component
 public class JwtUtil {
 
-    private static final long EXPIRATION_TIME = 30 * 24 * 60 * 60 * 1000;
-    private static final String SECRET_KEY = "campus-express-secret-key-for-jwt-token-generation-2024";
+    private static final long EXPIRATION_TIME = 30L * 24 * 60 * 60 * 1000;
+    private static final String SECRET_KEY_STRING = "campus-express-secret-key-for-jwt-token-generation-2024-secure-enough-for-hs512-algorithm-requirement";
+    private static final SecretKey SECRET_KEY = Keys.hmacShaKeyFor(SECRET_KEY_STRING.getBytes());
 
     public String generateToken(Long userId, String username, String role) {
         Map<String, Object> claims = new HashMap<>();
@@ -24,21 +27,22 @@ public class JwtUtil {
     }
 
     private String createToken(Map<String, Object> claims, String subject) {
-        Date now = new Date();
-        Date expiryDate = new Date(now.getTime() + EXPIRATION_TIME);
+        long nowMillis = System.currentTimeMillis();
+        long expiryMillis = nowMillis + EXPIRATION_TIME;
 
         return Jwts.builder()
                 .setClaims(claims)
                 .setSubject(subject)
-                .setIssuedAt(now)
-                .setExpiration(expiryDate)
-                .signWith(SignatureAlgorithm.HS512, SECRET_KEY)
+                .setIssuedAt(new Date(nowMillis))
+                .setExpiration(new Date(expiryMillis))
+                .signWith(SECRET_KEY, SignatureAlgorithm.HS512)
                 .compact();
     }
 
     public Claims parseToken(String token) {
-        return Jwts.parser()
+        return Jwts.parserBuilder()
                 .setSigningKey(SECRET_KEY)
+                .build()
                 .parseClaimsJws(token)
                 .getBody();
     }

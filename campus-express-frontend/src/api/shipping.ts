@@ -28,26 +28,26 @@ export interface ShippingAppointment {
 
 export const shippingAppointmentApi = {
   getMyPage: (params: { current?: number; size?: number; status?: number }) => {
-    return request.get<any, any>('/shipping-appointment/my-page', { params })
+    return request.get<any>('/shipping-appointment/my-page', { params })
   },
 
   getPage: (params: { current?: number; size?: number; userId?: number; status?: number; stationId?: number }) => {
-    return request.get<any, any>('/shipping-appointment/page', { params })
+    return request.get<any>('/shipping-appointment/page', { params })
   },
 
   create: (data: ShippingAppointment) => {
-    return request.post<any, ShippingAppointment>('/shipping-appointment', data)
+    return request.post<ShippingAppointment>('/shipping-appointment', data)
   },
 
   getDetail: (id: number) => {
-    return request.get<any, ShippingAppointment>(`/shipping-appointment/${id}`)
+    return request.get<ShippingAppointment>(`/shipping-appointment/${id}`)
   },
 
   audit: (id: number, status: number, auditRemark?: string) => {
-    return request.put<any, boolean>(`/shipping-appointment/audit/${id}`, null, { status, auditRemark })
+    return request.put<boolean>(`/shipping-appointment/audit/${id}`, null, { status, auditRemark })
   },
 
   cancel: (id: number) => {
-    return request.put<any, boolean>(`/shipping-appointment/cancel/${id}`)
+    return request.put<boolean>(`/shipping-appointment/cancel/${id}`)
   }
 }
