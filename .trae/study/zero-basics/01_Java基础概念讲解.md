@@ -371,7 +371,7 @@ public class UserController {  // 第3行
 // 作用：告诉Spring"这个类中所有方法的URL都以/user开头"
 // 没有它会怎样：无法统一设置URL前缀
 // 在本项目中的作用：用户相关接口的URL都是 /user/xxx（如/user/login、/user/register）
-
+p-【【【【【【【【【00
 // 第3行解释：
 // 定义UserController类
 
