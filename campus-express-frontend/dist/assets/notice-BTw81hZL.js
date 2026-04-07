@@ -1,0 +1,1 @@
+import{M as t}from"./index-B10xgmQ3.js";const i={getList:e=>t.get("/notice/list",{params:e}),getDetail:e=>t.get(`/notice/${e}`),add:e=>t.post("/admin/notice/add",e),update:e=>t.put("/admin/notice/update",e),delete:e=>t.delete(`/admin/notice/delete/${e}`),getPage:e=>t.get("/admin/notice/page",{params:e})};export{i as n};

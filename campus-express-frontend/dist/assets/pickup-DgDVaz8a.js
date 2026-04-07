@@ -1,0 +1,1 @@
+import{M as r}from"./index-B10xgmQ3.js";const d={getList:async e=>r.get("/admin/pickup-record/list",e),getById:async e=>r.get(`/admin/pickup-record/${e}`),add:async e=>r.post("/admin/pickup-record/add",e),update:async e=>r.put("/admin/pickup-record/update",e),delete:async e=>r.delete(`/admin/pickup-record/delete/${e}`)};export{d as p};
