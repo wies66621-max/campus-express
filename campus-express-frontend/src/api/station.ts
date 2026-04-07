@@ -10,7 +10,7 @@ export const stationApi = {
     return request.get<PageResult<Station>>('/admin/station/search', { stationName, location, status, pageNum, pageSize })
   },
 
-  getById: async (id: number): Promise<ApiResponse<Station>> => {
+  getById: async (id: string): Promise<ApiResponse<Station>> => {
     return request.get<Station>(`/admin/station/${id}`)
   },
 
@@ -22,7 +22,7 @@ export const stationApi = {
     return request.put<void>('/admin/station/update', data)
   },
 
-  delete: async (id: number): Promise<ApiResponse<void>> => {
+  delete: async (id: string): Promise<ApiResponse<void>> => {
     return request.delete<void>(`/admin/station/delete/${id}`)
   }
 }

@@ -4,6 +4,8 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
@@ -17,10 +19,12 @@ public class ShippingAppointment {
 
     @TableId(type = IdType.AUTO)
     @Schema(description = "预约ID")
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long id;
 
     @TableField("user_id")
     @Schema(description = "用户ID")
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long userId;
 
     @TableField(exist = false)
@@ -81,6 +85,7 @@ public class ShippingAppointment {
 
     @TableField("station_id")
     @Schema(description = "快递站ID")
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long stationId;
 
     @TableField(exist = false)
@@ -93,6 +98,7 @@ public class ShippingAppointment {
 
     @TableField("auditor_id")
     @Schema(description = "审核人ID")
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long auditorId;
 
     @TableField(exist = false)

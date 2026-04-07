@@ -171,11 +171,11 @@ const pagination = reactive({
 })
 
 const formData = reactive<Notice>({
-  id: 0,
+  id: '',
   title: '',
   content: '',
   status: 1,
-  creatorId: undefined,
+  creatorId: '',
   creatorName: '',
   createTime: '',
   updateTime: ''
@@ -325,14 +325,14 @@ const handleSubmit = async () => {
       submitLoading.value = true
       try {
         let response
-        if (formData.id === 0) {
+        if (!formData.id) {
           response = await noticeApi.add(formData)
         } else {
           response = await noticeApi.update(formData)
         }
         
         if (response.code === 200) {
-          ElMessage.success(formData.id === 0 ? '新增成功' : '更新成功')
+          ElMessage.success(!formData.id ? '新增成功' : '更新成功')
           dialogVisible.value = false
           fetchNoticeList()
         } else {

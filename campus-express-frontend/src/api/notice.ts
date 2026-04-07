@@ -1,11 +1,11 @@
 import { request } from '@/utils/request'
 
 export interface Notice {
-  id?: number
+  id?: string
   title?: string
   content?: string
   status?: number
-  creatorId?: number
+  creatorId?: string
   creatorName?: string
   createTime?: string
   updateTime?: string
@@ -16,7 +16,7 @@ export const noticeApi = {
     return request.get<Notice[]>('/notice/list', { params })
   },
 
-  getDetail: (id: number) => {
+  getDetail: (id: string) => {
     return request.get<Notice>(`/notice/${id}`)
   },
 
@@ -28,7 +28,7 @@ export const noticeApi = {
     return request.put<Notice>('/admin/notice/update', data)
   },
 
-  delete: (id: number) => {
+  delete: (id: string) => {
     return request.delete<string>(`/admin/notice/delete/${id}`)
   },
 

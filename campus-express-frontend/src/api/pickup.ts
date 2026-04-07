@@ -6,7 +6,7 @@ export const pickupApi = {
     return request.get<PageResult<Pickup>>('/admin/pickup-record/list', params)
   },
 
-  getById: async (id: number): Promise<ApiResponse<Pickup>> => {
+  getById: async (id: string): Promise<ApiResponse<Pickup>> => {
     return request.get<Pickup>(`/admin/pickup-record/${id}`)
   },
 
@@ -18,7 +18,7 @@ export const pickupApi = {
     return request.put<void>('/admin/pickup-record/update', data)
   },
 
-  delete: async (id: number): Promise<ApiResponse<void>> => {
+  delete: async (id: string): Promise<ApiResponse<void>> => {
     return request.delete<void>(`/admin/pickup-record/delete/${id}`)
   }
 }

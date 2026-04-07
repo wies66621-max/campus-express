@@ -53,7 +53,7 @@ public class ExpressServiceImpl extends ServiceImpl<ExpressMapper, Express> impl
 
         LambdaQueryWrapper<Express> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(Express::getTrackingNumber, express.getTrackingNumber());
-        Express existExpress = getOne(wrapper);
+        Express existExpress = getOne(wrapper, false);
         if (existExpress != null) {
             throw new RuntimeException("快递单号已存在");
         }
@@ -207,7 +207,7 @@ public class ExpressServiceImpl extends ServiceImpl<ExpressMapper, Express> impl
 
         LambdaQueryWrapper<Express> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(Express::getPickupCode, pickupCode);
-        Express express = getOne(wrapper);
+        Express express = getOne(wrapper, false);
 
         if (express == null) {
             throw new RuntimeException("取件码不存在");
@@ -326,17 +326,42 @@ public class ExpressServiceImpl extends ServiceImpl<ExpressMapper, Express> impl
         Page<Express> page = new Page<>(pageNum, pageSize);
         LambdaQueryWrapper<Express> wrapper = new LambdaQueryWrapper<>();
 
-        if (trackingNumber != null && !trackingNumber.trim().isEmpty()) {
-            wrapper.eq(Express::getTrackingNumber, trackingNumber);
+        boolean hasSearchCondition = false;
+
+        if ((trackingNumber != null && !trackingNumber.trim().isEmpty()) ||
+            (pickupCode != null && !pickupCode.trim().isEmpty()) ||
+            (receiverPhone != null && !receiverPhone.trim().isEmpty())) {
+            
+            hasSearchCondition = true;
+            wrapper.and(w -> {
+                boolean hasOr = false;
+                
+                if (trackingNumber != null && !trackingNumber.trim().isEmpty()) {
+                    w.eq(Express::getTrackingNumber, trackingNumber);
+                    hasOr = true;
+                }
+                if (pickupCode != null && !pickupCode.trim().isEmpty()) {
+                    if (hasOr) {
+                        w.or();
+                    }
+                    w.eq(Express::getPickupCode, pickupCode);
+                    hasOr = true;
+                }
+                if (receiverPhone != null && !receiverPhone.trim().isEmpty()) {
+                    if (hasOr) {
+                        w.or();
+                    }
+                    w.like(Express::getReceiverPhone, receiverPhone);
+                }
+            });
         }
-        if (pickupCode != null && !pickupCode.trim().isEmpty()) {
-            wrapper.eq(Express::getPickupCode, pickupCode);
-        }
-        if (receiverPhone != null && !receiverPhone.trim().isEmpty()) {
-            wrapper.like(Express::getReceiverPhone, receiverPhone);
-        }
+
         if (status != null) {
             wrapper.eq(Express::getStatus, status);
+        }
+
+        if (!hasSearchCondition && status == null) {
+            wrapper.isNotNull(Express::getId);
         }
 
         wrapper.orderByDesc(Express::getCreateTime);

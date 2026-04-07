@@ -116,7 +116,7 @@ public class AdminExpressController {
     }
 
     @Operation(summary = "快递统计")
-    @RequireAuth(roles = {"admin"})
+    @RequireAuth(roles = {"admin", "courier"})
     @GetMapping("/statistics")
     public R<Map<String, Object>> getStatistics() {
         try {

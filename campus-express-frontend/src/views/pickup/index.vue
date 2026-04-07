@@ -137,9 +137,9 @@ const pagination = reactive({
 })
 
 const formData = reactive<Pickup>({
-  id: 0,
-  expressId: 0,
-  operatorId: 0,
+  id: '',
+  expressId: '',
+  operatorId: '',
   pickupTime: '',
   status: 0,
   remark: '',
@@ -261,14 +261,14 @@ const handleSubmit = async () => {
       submitLoading.value = true
       try {
         let response
-        if (formData.id === 0) {
+        if (!formData.id) {
           response = await pickupApi.add(formData)
         } else {
           response = await pickupApi.update(formData)
         }
         
         if (response.code === 200) {
-          ElMessage.success(formData.id === 0 ? '添加成功' : '更新成功')
+          ElMessage.success(!formData.id ? '添加成功' : '更新成功')
           dialogVisible.value = false
           fetchPickupList()
         } else {

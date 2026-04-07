@@ -4,6 +4,8 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
@@ -16,14 +18,17 @@ public class PickupRecord {
 
     @TableId(type = IdType.AUTO)
     @Schema(description = "记录ID")
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long id;
 
     @TableField("express_id")
     @Schema(description = "快递ID")
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long expressId;
 
     @TableField("operator_id")
     @Schema(description = "操作员ID")
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long operatorId;
 
     @TableField("pickup_time")

@@ -6,7 +6,7 @@ export const userApi = {
     return request.get<PageResult<User>>('/admin/user/list', params)
   },
 
-  getById: async (id: number): Promise<ApiResponse<User>> => {
+  getById: async (id: string): Promise<ApiResponse<User>> => {
     return request.get<User>(`/admin/user/${id}`)
   },
 
@@ -18,15 +18,15 @@ export const userApi = {
     return request.put<void>('/admin/user/update', data)
   },
 
-  delete: async (id: number, currentUserId: number): Promise<ApiResponse<void>> => {
+  delete: async (id: string, currentUserId: string): Promise<ApiResponse<void>> => {
     return request.delete<void>(`/admin/user/delete/${id}`, { currentUserId })
   },
 
-  updateStatus: async (id: number, status: number): Promise<ApiResponse<void>> => {
+  updateStatus: async (id: string, status: number): Promise<ApiResponse<void>> => {
     return request.put<void>(`/admin/user/status/${id}`, undefined, { status })
   },
 
-  resetPassword: async (id: number): Promise<ApiResponse<void>> => {
+  resetPassword: async (id: string): Promise<ApiResponse<void>> => {
     return request.put<void>(`/admin/user/reset-password/${id}`)
   },
 

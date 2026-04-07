@@ -154,9 +154,9 @@ const detailVisible = ref(false)
 const auditDialogVisible = ref(false)
 
 const searchForm = reactive({
-  userId: undefined as number | undefined,
+  userId: undefined as string | undefined,
   status: undefined as number | undefined,
-  stationId: undefined as number | undefined
+  stationId: undefined as string | undefined
 })
 
 const pagination = reactive({
@@ -169,7 +169,7 @@ const detailData = ref<ShippingAppointment>({} as ShippingAppointment)
 const stations = ref<any[]>([])
 
 const auditForm = reactive({
-  id: 0,
+  id: '',
   status: 1,
   auditRemark: ''
 })

@@ -30,7 +30,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     public User getUserByUsername(String username) {
         LambdaQueryWrapper<User> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(User::getUsername, username);
-        return getOne(wrapper);
+        return getOne(wrapper, false);
     }
 
     @Override
@@ -40,8 +40,12 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             throw new RuntimeException("用户名已存在");
         }
         
-        user.setRole("user");
-        user.setStatus(1);
+        if (user.getRole() == null || user.getRole().trim().isEmpty()) {
+            user.setRole("user");
+        }
+        if (user.getStatus() == null) {
+            user.setStatus(1);
+        }
         user.setCreateTime(LocalDateTime.now());
         user.setUpdateTime(LocalDateTime.now());
         return save(user);
@@ -49,9 +53,13 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
     @Override
     public boolean updateUser(User user) {
+        if (user.getId() == null) {
+            throw new RuntimeException("用户ID不能为空");
+        }
+        
         User existingUser = getById(user.getId());
         if (existingUser == null) {
-            throw new RuntimeException("用户不存在");
+            throw new RuntimeException("用户不存在，ID: " + user.getId());
         }
         
         if (!existingUser.getUsername().equals(user.getUsername())) {

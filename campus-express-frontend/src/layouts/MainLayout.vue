@@ -16,11 +16,11 @@
           <el-icon><HomeFilled /></el-icon>
           <span>首页</span>
         </el-menu-item>
-        <el-menu-item index="/express" v-if="isAdmin">
+        <el-menu-item index="/express" v-if="isAdmin || isCourier">
           <el-icon><Box /></el-icon>
           <span>快递管理</span>
         </el-menu-item>
-        <el-menu-item index="/pickup" v-if="isAdmin">
+        <el-menu-item index="/pickup" v-if="isAdmin || isCourier">
           <el-icon><Document /></el-icon>
           <span>取件记录</span>
         </el-menu-item>

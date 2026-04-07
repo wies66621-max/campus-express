@@ -121,7 +121,7 @@ const pagination = reactive({
 })
 
 const formData = reactive<Station>({
-  id: 0,
+  id: '',
   stationName: '',
   location: '',
   contactPhone: '',
@@ -260,14 +260,14 @@ const handleSubmit = async () => {
       submitLoading.value = true
       try {
         let response
-        if (formData.id === 0) {
+        if (!formData.id) {
           response = await stationApi.add(formData)
         } else {
           response = await stationApi.update(formData)
         }
         
         if (response.code === 200) {
-          ElMessage.success(formData.id === 0 ? '添加成功' : '更新成功')
+          ElMessage.success(!formData.id ? '添加成功' : '更新成功')
           dialogVisible.value = false
           fetchStationList()
         } else {

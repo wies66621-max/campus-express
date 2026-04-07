@@ -4,6 +4,8 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
@@ -17,6 +19,7 @@ public class Express {
 
     @TableId(type = IdType.AUTO)
     @Schema(description = "快递ID")
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long id;
 
     @NotBlank(message = "快递单号不能为空")
@@ -48,6 +51,7 @@ public class Express {
 
     @TableField("station_id")
     @Schema(description = "快递站ID")
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long stationId;
 
     @TableField(exist = false)

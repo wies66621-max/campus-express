@@ -34,3 +34,15 @@ build/
 
 ### 前端参考项目 ###
 前端参考项目/
+
+### 前端依赖 ###
+node_modules/
+package-lock.json
+yarn.lock
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+### 前端构建产物 ###
+dist/
+build/

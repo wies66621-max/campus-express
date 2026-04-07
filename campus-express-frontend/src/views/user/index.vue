@@ -33,8 +33,8 @@
         <el-table-column prop="phone" label="手机号" />
         <el-table-column prop="role" label="角色">
           <template #default="{ row }">
-            <el-tag :type="row.role === 'admin' ? 'danger' : 'primary'">
-              {{ row.role === 'admin' ? '管理员' : '普通用户' }}
+            <el-tag :type="getRoleType(row.role)">
+              {{ getRoleText(row.role) }}
             </el-tag>
           </template>
         </el-table-column>
@@ -79,9 +79,9 @@
         label-width="100px"
       >
         <el-form-item label="用户名" prop="username">
-          <el-input v-model="formData.username" placeholder="请输入用户名" :disabled="formData.id !== 0" />
+          <el-input v-model="formData.username" placeholder="请输入用户名" :disabled="!!formData.id" />
         </el-form-item>
-        <el-form-item label="密码" prop="password" v-if="formData.id === 0">
+        <el-form-item label="密码" prop="password" v-if="!formData.id">
           <el-input v-model="formData.password" type="password" placeholder="请输入密码" show-password />
         </el-form-item>
         <el-form-item label="真实姓名" prop="realName">
@@ -93,6 +93,7 @@
         <el-form-item label="角色" prop="role">
           <el-select v-model="formData.role" placeholder="请选择角色" style="width: 100%">
             <el-option label="管理员" value="admin" />
+            <el-option label="快递员" value="courier" />
             <el-option label="普通用户" value="user" />
           </el-select>
         </el-form-item>
@@ -127,12 +128,12 @@ const searchForm = reactive({
 
 const tableData = ref<User[]>([])
 const dialogVisible = ref(false)
-const dialogTitle = computed(() => formData.id === 0 ? '添加用户' : '编辑用户')
+const dialogTitle = computed(() => !formData.id ? '添加用户' : '编辑用户')
 const submitLoading = ref(false)
 const formRef = ref<FormInstance>()
 
 const formData = reactive<User>({
-  id: 0,
+  id: '',
   username: '',
   password: '',
   realName: '',
@@ -185,6 +186,24 @@ const getStatusText = (status: number) => {
     1: '启用'
   }
   return map[status] || '未知'
+}
+
+const getRoleType = (role: string) => {
+  const map: Record<string, string> = {
+    admin: 'danger',
+    courier: 'warning',
+    user: 'primary'
+  }
+  return map[role] || 'info'
+}
+
+const getRoleText = (role: string) => {
+  const map: Record<string, string> = {
+    admin: '管理员',
+    courier: '快递员',
+    user: '普通用户'
+  }
+  return map[role] || '未知'
 }
 
 const fetchUserList = async () => {
@@ -240,7 +259,7 @@ const handleReset = () => {
 
 const handleAdd = () => {
   Object.assign(formData, {
-    id: 0,
+    id: '',
     username: '',
     password: '',
     realName: '',
@@ -271,15 +290,18 @@ const handleSubmit = async () => {
     if (valid) {
       submitLoading.value = true
       try {
+        console.log('提交的用户数据:', formData)
+        console.log('用户ID:', formData.id)
+        
         let response
-        if (formData.id === 0) {
+        if (!formData.id) {
           response = await userApi.add(formData)
         } else {
           response = await userApi.update(formData)
         }
         
         if (response.code === 200) {
-          ElMessage.success(formData.id === 0 ? '添加成功' : '更新成功')
+          ElMessage.success(!formData.id ? '添加成功' : '更新成功')
           dialogVisible.value = false
           fetchUserList()
         } else {
@@ -324,7 +346,7 @@ const handleDelete = (row: User) => {
     type: 'warning'
   }).then(async () => {
     try {
-      const currentUserId = userStore.user?.id || 0
+      const currentUserId = userStore.user?.id || ''
       const response = await userApi.delete(row.id, currentUserId)
       
       if (response.code === 200) {

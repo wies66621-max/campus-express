@@ -10,7 +10,7 @@ export const expressApi = {
     return request.get<PageResult<Express>>('/admin/express/list', params)
   },
 
-  getById: async (id: number): Promise<ApiResponse<Express>> => {
+  getById: async (id: string): Promise<ApiResponse<Express>> => {
     return request.get<Express>(`/admin/express/${id}`)
   },
 
@@ -26,7 +26,7 @@ export const expressApi = {
     return request.put<void>('/admin/express/update', data)
   },
 
-  delete: async (id: number): Promise<ApiResponse<void>> => {
+  delete: async (id: string): Promise<ApiResponse<void>> => {
     return request.delete<void>(`/admin/express/delete/${id}`)
   },
 

@@ -15,6 +15,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
+import java.util.Map;
 
 @Tag(name = "取件记录管理", description = "管理员查询取件记录接口")
 @RestController
@@ -71,6 +72,49 @@ public class AdminPickupRecordController {
             return R.error("取件记录不存在");
         } catch (RuntimeException e) {
             return R.error(e.getMessage());
+        }
+    }
+
+    @Operation(summary = "添加取件记录")
+    @RequireAuth(roles = {"admin"})
+    @PostMapping("/add")
+    public R<String> addPickupRecord(@RequestBody Map<String, Object> params) {
+        try {
+            if (params.get("expressId") == null || params.get("expressId").toString().trim().isEmpty()) {
+                return R.error("快递ID不能为空");
+            }
+            if (params.get("operatorId") == null || params.get("operatorId").toString().trim().isEmpty()) {
+                return R.error("操作员ID不能为空");
+            }
+            if (params.get("pickupTime") == null || params.get("pickupTime").toString().trim().isEmpty()) {
+                return R.error("取件时间不能为空");
+            }
+            
+            PickupRecord pickupRecord = new PickupRecord();
+            pickupRecord.setExpressId(Long.parseLong(params.get("expressId").toString()));
+            pickupRecord.setOperatorId(Long.parseLong(params.get("operatorId").toString()));
+            
+            String pickupTimeStr = params.get("pickupTime").toString();
+            pickupRecord.setPickupTime(LocalDateTime.parse(pickupTimeStr.replace(" ", "T")));
+            
+            if (params.get("status") != null) {
+                pickupRecord.setStatus(Integer.parseInt(params.get("status").toString()));
+            } else {
+                pickupRecord.setStatus(0);
+            }
+            
+            if (params.get("remark") != null) {
+                pickupRecord.setRemark(params.get("remark").toString());
+            }
+            
+            pickupRecord.setCreateTime(LocalDateTime.now());
+            boolean success = pickupRecordService.save(pickupRecord);
+            if (success) {
+                return R.success("添加成功");
+            }
+            return R.error("添加失败");
+        } catch (Exception e) {
+            return R.error("系统异常，请联系管理员");
         }
     }
 

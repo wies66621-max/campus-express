@@ -21,7 +21,7 @@ public class StationServiceImpl extends ServiceImpl<StationMapper, Station> impl
 
         LambdaQueryWrapper<Station> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(Station::getStationName, station.getStationName());
-        Station existStation = getOne(wrapper);
+        Station existStation = getOne(wrapper, false);
         if (existStation != null) {
             throw new RuntimeException("快递站名称已存在");
         }

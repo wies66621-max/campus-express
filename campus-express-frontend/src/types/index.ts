@@ -13,7 +13,7 @@ export interface PageResult<T = any> {
 }
 
 export interface User {
-  id: number
+  id: string
   username: string
   password?: string
   realName: string
@@ -23,14 +23,14 @@ export interface User {
 }
 
 export interface Express {
-  id: number
+  id: string
   trackingNumber: string
   company: string
   receiverName: string
   receiverPhone: string
   pickupCode: string
   status: number
-  stationId: number
+  stationId: string
   stationName?: string
   remark: string
   createTime: string
@@ -38,9 +38,9 @@ export interface Express {
 }
 
 export interface Pickup {
-  id: number
-  expressId: number
-  operatorId: number
+  id: string
+  expressId: string
+  operatorId: string
   pickupTime: string
   status: number
   remark: string
@@ -48,7 +48,7 @@ export interface Pickup {
 }
 
 export interface Station {
-  id: number
+  id: string
   stationName: string
   location: string
   contactPhone: string

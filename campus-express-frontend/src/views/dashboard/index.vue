@@ -1,11 +1,11 @@
 <template>
   <div class="dashboard-container">
     <div class="dashboard-header">
-      <h2>{{ userRole === 'admin' ? '数据统计' : '我的快递' }}</h2>
-      <p class="module-info">{{ userRole === 'admin' ? '毕业设计模块：数据统计模块' : '毕业设计模块：用户快递管理模块' }}</p>
+      <h2>{{ userRole === 'admin' || userRole === 'courier' ? '数据统计' : '我的快递' }}</h2>
+      <p class="module-info">{{ userRole === 'admin' || userRole === 'courier' ? '毕业设计模块：数据统计模块' : '毕业设计模块：用户快递管理模块' }}</p>
     </div>
     
-    <template v-if="userRole === 'admin'">
+    <template v-if="userRole === 'admin' || userRole === 'courier'">
       <el-row :gutter="20" class="stats-row">
         <el-col :span="6">
           <el-card class="stat-card">
@@ -454,7 +454,7 @@ const handleViewNotice = async (notice: Notice) => {
 onMounted(async () => {
   await userStore.initUserInfo()
   
-  if (userRole.value === 'admin') {
+  if (userRole.value === 'admin' || userRole.value === 'courier') {
     fetchStatistics()
     fetchRecentPickups()
     initPieChart()

@@ -3,6 +3,8 @@ package com.school.campusexpress.entity;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.TableField;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import lombok.Data;
@@ -14,6 +16,7 @@ import java.time.LocalDateTime;
 public class User {
 
     @TableId
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long id;
 
     @NotBlank(message = "用户名不能为空")

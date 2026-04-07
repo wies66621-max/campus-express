@@ -5,6 +5,8 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.TableLogic;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
@@ -17,6 +19,7 @@ public class Notice {
 
     @TableId(type = IdType.AUTO)
     @Schema(description = "公告ID")
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long id;
 
     @TableField("title")
@@ -33,6 +36,7 @@ public class Notice {
 
     @TableField("creator_id")
     @Schema(description = "发布人ID")
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long creatorId;
 
     @TableField("is_deleted")
