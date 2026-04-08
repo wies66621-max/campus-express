@@ -46,3 +46,9 @@ yarn-error.log*
 ### 前端构建产物 ###
 dist/
 build/
+
+### Vite缓存 ###
+.vite/
+
+### 环境变量文件 ###
+.env*
